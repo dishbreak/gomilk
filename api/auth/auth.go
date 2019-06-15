@@ -24,28 +24,112 @@ func (p PermissionLevel) String() string {
 	return permissionLevelStrings[p]
 }
 
-type frob struct {
+/*
+FrobRecord contains a Golang representation of the response to the call rtm.auth.getFrob
+*/
+type FrobRecord struct {
 	Rsp struct {
 		Stat string
 		Frob string
 	}
 }
 
-func GetFrob() (string, error) {
+/*
+GetFrob calls rtm.auth.getFrob using the preconfigured API key.
+https://www.rememberthemilk.com/services/api/methods/rtm.auth.getFrob.rtm
+*/
+func GetFrob() (*FrobRecord, error) {
 	args := map[string]string{
 		"api_key": api.APIKey,
 	}
 
-	var frobResponse frob
+	var frobResponse FrobRecord
 	unmarshal := func(body []byte) error {
 		return json.Unmarshal(body, &frobResponse)
 	}
 
 	err := api.GetMethod("rtm.auth.getFrob", args, unmarshal)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return frobResponse.Rsp.Frob, nil
+	return &frobResponse, nil
 
 }
+
+/*
+TokenRecord contains a Golang representation of the response to the call rtm.auth.getToken
+*/
+type TokenRecord struct {
+	Rsp struct {
+		Stat string
+		Auth *TokenCheckRecord
+	}
+}
+
+/*
+TokenCheckRecord contains a Golang representation of the response to the call rtm.auth.checkToken
+*/
+type TokenCheckRecord struct {
+	Token string
+	Perms string
+	User  struct {
+		ID       string
+		Username string
+		Fullname string
+	}
+}
+
+/*
+GetToken calls rtm.auth.getToken using the preconfigured API key.
+https://www.rememberthemilk.com/services/api/methods/rtm.auth.getToken.rtm
+
+GetToken requires a frob from the RTM API, use GetFrob() to get one.
+*/
+func GetToken(frob string) (*TokenRecord, error) {
+	args := map[string]string{
+		"frob":    frob,
+		"api_key": api.APIKey,
+	}
+
+	var tokenRecord TokenRecord
+	unmarshal := func(body []byte) error {
+		return json.Unmarshal(body, &tokenRecord)
+	}
+
+	err := api.GetMethod("rtm.auth.getToken", args, unmarshal)
+	if err != nil {
+		return nil, err
+	}
+
+	return &tokenRecord, nil
+}
+
+/*
+CheckToken calls rtm.auth.checkToken using the preconfigured API key.
+https://www.rememberthemilk.com/services/api/methods/rtm.auth.checkToken.rtm
+
+You'll need to get token using GetToken() first.
+*/
+func CheckToken(authToken string) (*TokenCheckRecord, error) {
+	args := map[string]string{
+		"auth_token": authToken,
+		"api_key":    api.APIKey,
+	}
+
+	var tokenCheckRecord TokenCheckRecord
+	unmarshal := func(body []byte) error {
+		return json.Unmarshal(body, &tokenCheckRecord)
+	}
+
+	err := api.GetMethod("rtm.auth.checkToken", args, unmarshal)
+	if err != nil {
+		return nil, err
+	}
+
+	return &tokenCheckRecord, nil
+}
+
+const (
+	ERROR_INVALID_AUTH_TOKEN = "98"
+)
