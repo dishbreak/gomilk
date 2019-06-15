@@ -5,11 +5,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"net/url"
 	"sort"
 	"strings"
+
+	log "github.com/sirupsen/logrus"
 )
 
 const (
@@ -60,7 +61,7 @@ func FormURL(baseURL string, method string, params map[string]string) *url.URL {
 
 	u.RawQuery = query.Encode()
 
-	log.Printf("creating URL: %s", u)
+	log.Debugf("creating URL: %s", u)
 
 	return u
 }
@@ -99,10 +100,13 @@ func GetMethod(method string, args map[string]string, unmarshal func([]byte) err
 		return err
 	}
 
-	log.Println(string(body))
+	log.Debugf("RTM API response: %s", string(body))
 
 	var errorMessage RTMAPIError
 	if err := json.Unmarshal(body, &errorMessage); err != nil {
+		log.WithFields(log.Fields{
+			"error": err,
+		}).Fatal("Failed to unmarshal api response.")
 		return err
 	}
 	if errorMessage.Rsp.Stat == "fail" {
@@ -110,8 +114,13 @@ func GetMethod(method string, args map[string]string, unmarshal func([]byte) err
 	}
 
 	if err := unmarshal(body); err != nil {
+		log.WithFields(log.Fields{
+			"error": err,
+		}).Fatal("Failed to unmarshal api response.")
 		return err
 	}
+
+	log.Debug("Completed API request.")
 
 	return nil
 }

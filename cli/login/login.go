@@ -68,8 +68,8 @@ Setup will initialize Token with the value from the filesystem.
 This will let downstream code use Token to make authenticated requests.
 */
 func Setup() error {
-	Token, err := GetUserToken()
-	_ = Token // This is a module-level variable, so I'm "using" it here.
+	var err error
+	Token, err = GetUserToken()
 	return err
 }
 
