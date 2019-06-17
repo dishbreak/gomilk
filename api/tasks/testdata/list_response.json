@@ -1,0 +1,219 @@
+{
+	"rsp": {
+		"stat": "ok",
+		"tasks": {
+			"rev": "bxc3lqznhzpf8lx3ykutc6knx859eiu",
+			"list": [
+				{
+					"id": "8315491",
+					"taskseries": [
+						{
+							"id": "385468863",
+							"created": "2019-06-14T21:35:38Z",
+							"modified": "2019-06-16T22:52:25Z",
+							"name": "Pack up donations",
+							"source": "js",
+							"url": "",
+							"location_id": "",
+							"tags": {
+								"tag": [
+									"cleanup"
+								]
+							},
+							"participants": [],
+							"notes": [],
+							"task": [
+								{
+									"id": "671357482",
+									"due": "2019-06-16T07:00:00Z",
+									"has_due_time": "0",
+									"added": "2019-06-14T21:35:38Z",
+									"completed": "2019-06-16T22:52:25Z",
+									"deleted": "",
+									"priority": "N",
+									"postponed": "0",
+									"estimate": ""
+								}
+							]
+						},
+						{
+							"id": "385526582",
+							"created": "2019-06-15T20:04:26Z",
+							"modified": "2019-06-16T18:59:58Z",
+							"name": "Change sheets",
+							"source": "android",
+							"url": "",
+							"location_id": "",
+							"tags": [],
+							"participants": [],
+							"notes": [],
+							"task": [
+								{
+									"id": "671485567",
+									"due": "2019-06-16T07:00:00Z",
+									"has_due_time": "0",
+									"added": "2019-06-15T20:04:26Z",
+									"completed": "2019-06-16T18:59:54Z",
+									"deleted": "",
+									"priority": "1",
+									"postponed": "0",
+									"estimate": ""
+								}
+							]
+						},
+						{
+							"id": "385380757",
+							"created": "2019-06-13T19:28:12Z",
+							"modified": "2019-06-16T22:19:33Z",
+							"name": "Look for software scale in LM boxes",
+							"source": "android",
+							"url": "",
+							"location_id": "",
+							"tags": [],
+							"participants": [],
+							"notes": [],
+							"task": [
+								{
+									"id": "671181661",
+									"due": "2019-06-16T07:00:00Z",
+									"has_due_time": "0",
+									"added": "2019-06-13T19:28:12Z",
+									"completed": "2019-06-16T22:19:33Z",
+									"deleted": "",
+									"priority": "N",
+									"postponed": "0",
+									"estimate": ""
+								}
+							]
+						},
+						{
+							"id": "385570560",
+							"created": "2019-06-16T16:08:31Z",
+							"modified": "2019-06-16T22:05:09Z",
+							"name": "Activate Target redcard",
+							"source": "android",
+							"url": "",
+							"location_id": "",
+							"tags": [],
+							"participants": [],
+							"notes": [],
+							"task": [
+								{
+									"id": "671594577",
+									"due": "2019-06-16T07:00:00Z",
+									"has_due_time": "0",
+									"added": "2019-06-16T16:08:31Z",
+									"completed": "2019-06-16T22:05:09Z",
+									"deleted": "",
+									"priority": "N",
+									"postponed": "0",
+									"estimate": ""
+								}
+							]
+						},
+						{
+							"id": "385479083",
+							"created": "2019-06-15T01:56:48Z",
+							"modified": "2019-06-16T22:07:59Z",
+							"name": "Search for gorillapod",
+							"source": "android",
+							"url": "",
+							"location_id": "",
+							"tags": [],
+							"participants": [],
+							"notes": [],
+							"task": [
+								{
+									"id": "671386119",
+									"due": "2019-06-16T07:00:00Z",
+									"has_due_time": "0",
+									"added": "2019-06-15T01:56:48Z",
+									"completed": "2019-06-16T22:07:59Z",
+									"deleted": "",
+									"priority": "N",
+									"postponed": "0",
+									"estimate": ""
+								}
+							]
+						},
+						{
+							"id": "385580460",
+							"created": "2019-06-16T19:02:53Z",
+							"modified": "2019-06-16T23:01:30Z",
+							"name": "Install new insurance cards",
+							"source": "android",
+							"url": "",
+							"location_id": "",
+							"tags": [],
+							"participants": [],
+							"notes": [],
+							"task": [
+								{
+									"id": "671607767",
+									"due": "2019-06-16T07:00:00Z",
+									"has_due_time": "0",
+									"added": "2019-06-16T19:02:53Z",
+									"completed": "2019-06-16T23:01:30Z",
+									"deleted": "",
+									"priority": "N",
+									"postponed": "0",
+									"estimate": ""
+								}
+							]
+						},
+						{
+							"id": "385581942",
+							"created": "2019-06-16T19:24:42Z",
+							"modified": "2019-06-16T19:24:42Z",
+							"name": "Sweep and mop floors",
+							"source": "android",
+							"url": "",
+							"location_id": "",
+							"tags": [],
+							"participants": [],
+							"notes": [],
+							"task": [
+								{
+									"id": "671609587",
+									"due": "2019-06-16T07:00:00Z",
+									"has_due_time": "0",
+									"added": "2019-06-16T19:24:42Z",
+									"completed": "",
+									"deleted": "",
+									"priority": "N",
+									"postponed": "0",
+									"estimate": ""
+								}
+							]
+						},
+						{
+							"id": "385593256",
+							"created": "2019-06-16T22:52:21Z",
+							"modified": "2019-06-16T22:52:21Z",
+							"name": "Put donations out",
+							"source": "js",
+							"url": "",
+							"location_id": "",
+							"tags": [],
+							"participants": [],
+							"notes": [],
+							"task": [
+								{
+									"id": "671637589",
+									"due": "2019-06-16T07:00:00Z",
+									"has_due_time": "0",
+									"added": "2019-06-16T22:52:21Z",
+									"completed": "",
+									"deleted": "",
+									"priority": "N",
+									"postponed": "0",
+									"estimate": ""
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	}
+}

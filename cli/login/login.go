@@ -176,8 +176,8 @@ func Login(c *cli.Context) {
 		panic(err)
 	}
 
-	fmt.Printf("You've now logged in!")
-	fmt.Printf("If you'd like us to forget your login, delete the following file:")
+	fmt.Println("You've now logged in!")
+	fmt.Println("If you'd like us to forget your login, delete the following file:")
 	fmt.Printf("\t%s\n", tokenFilePath())
 	fmt.Println("Don't forget to buy some milk. :)")
 }

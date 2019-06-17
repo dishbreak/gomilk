@@ -2,10 +2,33 @@ package tasks
 
 import (
 	"encoding/json"
+	"sort"
 	"time"
 
 	"github.com/dishbreak/gomilk/api"
+	"github.com/dishbreak/gomilk/model/task"
+	log "github.com/sirupsen/logrus"
 )
+
+type taskResponse struct {
+	ID       string `json:"id"`
+	Created  time.Time
+	Modified time.Time
+	RawName  string `json:"name"`
+	Source   string
+	URL      string
+	Task     []struct {
+		ID         string `json:"id"`
+		Due        string
+		HasDueTime string `json:"has_due_time"`
+		Added      time.Time
+		Completed  string
+		Deleted    string
+		Priority   string
+		Postponed  string
+		Estimate   string
+	}
+}
 
 // TaskAddResponse contains the response for the call to rtm.tasks.add
 type TaskAddResponse struct {
@@ -16,53 +39,55 @@ type TaskAddResponse struct {
 			Undoable string
 		}
 		List struct {
-			ID         string `json:"id"`
-			Taskseries []struct {
-				ID       string `json:"id"`
-				Created  time.Time
-				Modified time.Time
-				Name     string
-				Source   string
-				Task     []struct {
-					ID  string `json:"id"`
-					Due string
-				}
-			}
+			ID         string
+			Taskseries []taskResponse
 		}
 	}
-}
-
-type Task interface {
-	Name() string
-	Due() *time.Time
 }
 
 /*
 Name returns the task name.
 */
-func (t *TaskAddResponse) Name() string {
-	return t.Rsp.List.Taskseries[0].Name
+func (t *taskResponse) Name() string {
+	return t.RawName
 }
 
 /*
-Due returns the due date.
+DueDate returns the due date, or an error if it doesn't have one.
 */
-func (t *TaskAddResponse) Due() *time.Time {
-	parsed, err := time.Parse(time.RFC3339, t.Rsp.List.Taskseries[0].Task[0].Due)
+func (t *taskResponse) DueDate() (time.Time, error) {
+	parsed, err := time.Parse(time.RFC3339, t.Task[0].Due)
 	if err != nil {
-		return nil
+		parsed = time.Now()
 	}
-	return &parsed
+	return parsed, err
 }
 
-type shellTask struct {
-	name string
+/*
+DueDateHasTime returns true when the user gave a specific date and time for the due date,
+false when the task just has a date.
+*/
+func (t *taskResponse) DueDateHasTime() bool {
+	return t.Task[0].HasDueTime == "1"
+}
+
+/*
+IsCompleted returns true when the completed field is a datetime.
+*/
+func (t *taskResponse) IsCompleted() bool {
+	completed := true
+	_, err := time.Parse(time.RFC3339, t.Task[0].Completed)
+	if err != nil {
+		completed = false
+	}
+
+	return completed
 }
 
 /*
 Add invokes rtm.task.add to create a new task. This method uses Smart Add and can only add top-level tasks.
 */
-func Add(apiToken string, name string, timelineID string) (Task, error) {
+func Add(apiToken string, name string, timelineID string) (task.Task, error) {
 	args := map[string]string{
 		"api_key":    api.APIKey,
 		"auth_token": apiToken,
@@ -71,7 +96,6 @@ func Add(apiToken string, name string, timelineID string) (Task, error) {
 		"name":       name,
 	}
 
-	var result Task
 	var response TaskAddResponse
 	unmarshal := func(b []byte) error {
 		return json.Unmarshal(b, &response)
@@ -82,9 +106,59 @@ func Add(apiToken string, name string, timelineID string) (Task, error) {
 		return nil, err
 	}
 
-	if result == nil {
-		result = &response
+	return &response.Rsp.List.Taskseries[0], nil
+
+}
+
+type TaskGetListResponse struct {
+	Rsp struct {
+		Stat  string
+		Tasks struct {
+			List []struct {
+				ID         string
+				Taskseries []taskResponse
+			}
+		}
 	}
+}
+
+func GetList(apiToken string, filter string) ([]task.Task, error) {
+	args := map[string]string{
+		"api_key":    api.APIKey,
+		"auth_token": apiToken,
+	}
+
+	if filter != "" {
+		args["filter"] = filter
+	}
+
+	var response TaskGetListResponse
+	unmarshal := func(b []byte) error {
+		return json.Unmarshal(b, &response)
+	}
+
+	err := api.GetMethod("rtm.tasks.getList", args, unmarshal)
+	if err != nil {
+		return []task.Task{}, err
+	}
+
+	log.WithFields(log.Fields{
+		"response": response,
+	}).Debug("")
+
+	log.WithFields(log.Fields{
+		"records": len(response.Rsp.Tasks.List),
+	}).Debug("Parsed responses.")
+
+	result := make([]task.Task, 0)
+	for _, list := range response.Rsp.Tasks.List {
+		for i := 0; i < len(list.Taskseries); i++ {
+			result = append(result, &list.Taskseries[i])
+		}
+
+	}
+
+	sort.Slice()
 
 	return result, nil
 

@@ -30,8 +30,8 @@ func Add(c *cli.Context) error {
 		return err
 	}
 
-	if task.Due() != nil {
-		fmt.Printf("Created task '%s', due on '%s'\n", task.Name(), task.Due())
+	if dueDate, err := task.DueDate(); err != nil {
+		fmt.Printf("Created task '%s', due on '%s'\n", task.Name(), dueDate)
 	} else {
 		fmt.Printf("Created task '%s'\n", task.Name())
 	}

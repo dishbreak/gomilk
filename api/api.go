@@ -1,6 +1,7 @@
 package api
 
 import (
+	"bytes"
 	"crypto/md5"
 	"encoding/json"
 	"fmt"
@@ -100,7 +101,13 @@ func GetMethod(method string, args map[string]string, unmarshal func([]byte) err
 		return err
 	}
 
-	log.Debugf("RTM API response: %s", string(body))
+	var prettyJSON bytes.Buffer
+	err = json.Indent(&prettyJSON, body, "", "\t")
+	if err != nil {
+		return err
+	}
+
+	log.Debugf("RTM API response: %s", string(prettyJSON.Bytes()))
 
 	var errorMessage RTMAPIError
 	if err := json.Unmarshal(body, &errorMessage); err != nil {
