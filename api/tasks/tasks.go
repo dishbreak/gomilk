@@ -2,7 +2,6 @@ package tasks
 
 import (
 	"encoding/json"
-	"sort"
 	"time"
 
 	"github.com/dishbreak/gomilk/api"
@@ -157,8 +156,6 @@ func GetList(apiToken string, filter string) ([]task.Task, error) {
 		}
 
 	}
-
-	sort.Slice()
 
 	return result, nil
 
