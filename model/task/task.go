@@ -4,13 +4,13 @@ import (
 	"sort"
 	"time"
 
+	"github.com/dishbreak/gomilk/cli/utils"
 	log "github.com/sirupsen/logrus"
 )
 
 // Task represents the interface that CLI will use to process API results.
 type Task interface {
-	// Name provides the user-visible name of the task. This may not be unique.
-	Name() string
+	utils.Identifiable
 	// DueDate will provide the task's due date if it has one, or error if it doesn't.
 	DueDate() (DateTime, error)
 	// DueDateHasTime tells us if the task has a specific time it's due, or if it's just due on the day.

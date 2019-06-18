@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/dishbreak/gomilk/cli/utils"
+
 	"github.com/dishbreak/gomilk/api/tasks"
 	"github.com/dishbreak/gomilk/cli/login"
 	"github.com/dishbreak/gomilk/model/task"
@@ -60,6 +62,11 @@ func (t *taskView) dueDateString() string {
 func List(c *cli.Context) error {
 	args := c.Args()
 
+	cache, cacheErr := utils.NewCache("tasks")
+	if cacheErr != nil {
+		fmt.Println("WARNING! Unable to cache results:", cacheErr)
+	}
+
 	filter := "status:incomplete"
 	if len(args) == 1 {
 		filter = args.Get(0)
@@ -74,10 +81,12 @@ func List(c *cli.Context) error {
 	}
 
 	task.Sort(tasks)
-
+	cachedItems := make([]utils.Identifiable, len(tasks))
 	for idx, task := range tasks {
 		fmt.Printf("[%d] %s\n", idx, &taskView{task})
+		cachedItems[idx] = task
 	}
 
-	return nil
+	err = cache.Update(cachedItems)
+	return err
 }

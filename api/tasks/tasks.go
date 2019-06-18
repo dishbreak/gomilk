@@ -10,14 +10,14 @@ import (
 )
 
 type taskResponse struct {
-	ID       string `json:"id"`
+	RawID    string `json:"id"`
 	Created  time.Time
 	Modified time.Time
 	RawName  string `json:"name"`
 	Source   string
 	URL      string
 	Task     []struct {
-		ID         string `json:"id"`
+		RawID      string `json:"id"`
 		Due        string
 		HasDueTime string `json:"has_due_time"`
 		Added      time.Time
@@ -90,6 +90,10 @@ func (t taskResponse) IsCompleted() bool {
 	}
 
 	return completed
+}
+
+func (t taskResponse) ID() string {
+	return t.RawID
 }
 
 /*
