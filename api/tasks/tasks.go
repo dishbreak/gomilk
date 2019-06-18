@@ -47,33 +47,42 @@ type TaskAddResponse struct {
 /*
 Name returns the task name.
 */
-func (t *taskResponse) Name() string {
+func (t taskResponse) Name() string {
 	return t.RawName
 }
 
 /*
 DueDate returns the due date, or an error if it doesn't have one.
 */
-func (t *taskResponse) DueDate() (time.Time, error) {
+func (t taskResponse) DueDate() (task.DateTime, error) {
+	// Determine the timezone.
+	zone, err := time.LoadLocation("Local")
+	if err != nil {
+		zone, err = time.LoadLocation("UTC")
+		if err != nil {
+			panic(err)
+		}
+	}
+
 	parsed, err := time.Parse(time.RFC3339, t.Task[0].Due)
 	if err != nil {
-		parsed = time.Now()
+		parsed = time.Now().In(zone)
 	}
-	return parsed, err
+	return task.DateTime{parsed.In(zone), t.DueDateHasTime()}, err
 }
 
 /*
 DueDateHasTime returns true when the user gave a specific date and time for the due date,
 false when the task just has a date.
 */
-func (t *taskResponse) DueDateHasTime() bool {
+func (t taskResponse) DueDateHasTime() bool {
 	return t.Task[0].HasDueTime == "1"
 }
 
 /*
 IsCompleted returns true when the completed field is a datetime.
 */
-func (t *taskResponse) IsCompleted() bool {
+func (t taskResponse) IsCompleted() bool {
 	completed := true
 	_, err := time.Parse(time.RFC3339, t.Task[0].Completed)
 	if err != nil {
@@ -152,10 +161,12 @@ func GetList(apiToken string, filter string) ([]task.Task, error) {
 	result := make([]task.Task, 0)
 	for _, list := range response.Rsp.Tasks.List {
 		for i := 0; i < len(list.Taskseries); i++ {
-			result = append(result, &list.Taskseries[i])
+			result = append(result, list.Taskseries[i])
 		}
 
 	}
+
+	task.Sort(result)
 
 	return result, nil
 
