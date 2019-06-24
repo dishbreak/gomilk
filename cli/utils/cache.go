@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"os"
 )
 
 /*
@@ -28,14 +27,15 @@ type Cache interface {
 }
 
 type cache struct {
-	name       string
-	filehandle *os.File
+	name     string
+	filename string
 }
 
 type identifierRecord struct {
 	Index   int
 	RawID   string
 	RawName string
+	Data    interface{}
 }
 
 type cacheContents []identifierRecord
@@ -74,13 +74,13 @@ func (c *cache) Update(items []Identifiable) error {
 		return err
 	}
 
-	err = ioutil.WriteFile(c.filehandle.Name(), data, 0600)
+	err = ioutil.WriteFile(c.filename, data, 0600)
 
 	return err
 }
 
 func (c *cache) Get() ([]Identifiable, error) {
-	data, err := ioutil.ReadFile(c.filehandle.Name())
+	data, err := ioutil.ReadFile(c.filename)
 	if err != nil {
 		return []Identifiable{}, err
 	}

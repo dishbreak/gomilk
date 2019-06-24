@@ -33,11 +33,8 @@ type taskResponse struct {
 type TaskAddResponse struct {
 	Rsp struct {
 		Stat        string
-		Transaction struct {
-			ID       string `json:"id"`
-			Undoable string
-		}
-		List struct {
+		Tranasction api.TransactionRecord
+		List        struct {
 			ID         string
 			Taskseries []taskResponse
 		}
@@ -122,7 +119,7 @@ func Add(apiToken string, name string, timelineID string) (task.Task, error) {
 
 }
 
-type TaskGetListResponse struct {
+type taskGetListResponse struct {
 	Rsp struct {
 		Stat  string
 		Tasks struct {
@@ -134,7 +131,19 @@ type TaskGetListResponse struct {
 	}
 }
 
-func GetList(apiToken string, filter string) ([]task.Task, error) {
+type GetListResponse struct {
+	Rsp struct {
+		Stat  string
+		Tasks struct {
+			List []struct {
+				ID         string
+				Taskseries []task.Task
+			}
+		}
+	}
+}
+
+func GetList(apiToken string, filter string) (*GetListResponse, error) {
 	args := map[string]string{
 		"api_key":    api.APIKey,
 		"auth_token": apiToken,
@@ -144,7 +153,7 @@ func GetList(apiToken string, filter string) ([]task.Task, error) {
 		args["filter"] = filter
 	}
 
-	var response TaskGetListResponse
+	var response taskGetListResponse
 	unmarshal := func(b []byte) error {
 		return json.Unmarshal(b, &response)
 	}
@@ -162,16 +171,22 @@ func GetList(apiToken string, filter string) ([]task.Task, error) {
 		"records": len(response.Rsp.Tasks.List),
 	}).Debug("Parsed responses.")
 
-	result := make([]task.Task, 0)
-	for _, list := range response.Rsp.Tasks.List {
-		for i := 0; i < len(list.Taskseries); i++ {
-			result = append(result, list.Taskseries[i])
-		}
+	var result GetListResponse
+	result.Rsp.Stat = response.Rsp.Stat
 
+	for idx, list := range response.Rsp.Tasks.List {
+		result.Rsp.Tasks.List[idx].ID = response.Rsp.Tasks.List[idx].ID
+		tasks := make([]task.Task, 0)
+
+		for i := 0; i < len(list.Taskseries); i++ {
+			tasks = append(tasks, list.Taskseries[i])
+		}
+		task.Sort(tasks)
+		result.Rsp.Tasks.List[idx].Taskseries = tasks
 	}
 
-	task.Sort(result)
-
-	return result, nil
+	return &result, nil
 
 }
+
+func Complete(apiToken, taskId, listID, timeline string)

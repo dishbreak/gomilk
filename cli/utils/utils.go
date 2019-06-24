@@ -8,35 +8,33 @@ import (
 )
 
 /*
-GetGomilkFileName will give you a pointer to a file inside the .gomilk dir within the user's home directory.
-
-Be warned! This will erase any existing file with the same name.
+GetGomilkFileName will give you a filename for a file inside the .gomilk dir within the user's home directory.
+It's your responsibility as the caller to create this file!
 */
-func GetGomilkFile(filename string) (*os.File, error) {
+func GetGomilkFile(filename string) (string, error) {
 	user, err := user.Current()
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	gomilkDir := path.Join(user.HomeDir, ".gomilk")
-	if stat, err := os.Stat(gomilkDir); os.IsNotExist(err) {
-		err = os.Mkdir(gomilkDir, 0755)
+	err = mkdirIfNotExists(gomilkDir)
+	if err != nil {
+		return "", err
+	}
+
+	return path.Join(gomilkDir, filename), nil
+
+}
+
+func mkdirIfNotExists(dirPath string) error {
+	if stat, err := os.Stat(dirPath); os.IsNotExist(err) {
+		err = os.MkdirAll(dirPath, 0755)
 		if err != nil {
-			return nil, err
+			return err
 		}
 	} else if mode := stat.Mode(); !mode.IsDir() {
-		return nil, fmt.Errorf("needed to create dir '%s' but it exists already as a file", gomilkDir)
+		return fmt.Errorf("needed to create dir '%s' but it exists already as a file", dirPath)
 	}
-
-	fileHandle, err := os.Create(path.Join(gomilkDir, filename))
-	if err != nil {
-		return nil, err
-	}
-
-	err = fileHandle.Chmod(0600)
-	if err != nil {
-		return nil, err
-	}
-
-	return fileHandle, nil
+	return nil
 }

@@ -79,6 +79,16 @@ type RTMAPIError struct {
 	}
 }
 
+/*
+TransactionRecord describes the transaction's identifiable information.
+
+See https://www.rememberthemilk.com/services/api/timelines.rtm for details.
+*/
+type TransactionRecord struct {
+	ID       string
+	Undoable string
+}
+
 func (e *RTMAPIError) Error() string {
 	return fmt.Sprintf("RTM API encountered code %s: %s", e.Rsp.Err.Code, e.Rsp.Err.Msg)
 }
