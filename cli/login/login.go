@@ -4,19 +4,15 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/url"
-	"os"
-	"path"
-	"path/filepath"
 
 	"github.com/urfave/cli"
 
 	"github.com/pkg/browser"
 
 	"github.com/dishbreak/gomilk/api"
+	"github.com/dishbreak/gomilk/cli/utils"
 
 	"github.com/dishbreak/gomilk/api/auth"
-
-	"github.com/mitchellh/go-homedir"
 )
 
 /*
@@ -30,24 +26,16 @@ func (e *GetUserTokenError) Error() string {
 	return fmt.Sprintf("Failed to find token at path: %s", e.TokenFilePath)
 }
 
-func tokenFilePath() string {
-	userdir, err := homedir.Dir()
-	if err != nil {
-		panic(err)
-	}
-
-	tokenPath := filepath.Join(userdir, ".gomilk", "token")
-
-	return tokenPath
-}
-
 /*
 GetUserToken retrieves the token from the filesystem.
 
 Don't presume this token is correct unless you've called IsAuthenticated() first
 */
 func GetUserToken() (string, error) {
-	tokenPath := tokenFilePath()
+	tokenPath, err := utils.GetGomilkFile("token")
+	if err != nil {
+		return "", err
+	}
 	buffer, err := ioutil.ReadFile(tokenPath)
 
 	if err != nil {
@@ -73,24 +61,19 @@ func Setup() error {
 	return err
 }
 
-func setUserToken(token string) error {
-	tokenPath := tokenFilePath()
-	gomilkDir := path.Dir(tokenPath)
-	if stat, err := os.Stat(gomilkDir); os.IsNotExist(err) {
-		err = os.Mkdir(gomilkDir, 0755)
-		if err != nil {
-			return err
-		}
-	} else if mode := stat.Mode(); !mode.IsDir() {
-		return fmt.Errorf("needed to create dir '%s' but it exists already as a file", gomilkDir)
-	}
+func setUserToken(token string) (string, error) {
 
-	err := ioutil.WriteFile(tokenPath, []byte(token), 0600)
+	tokenPath, err := utils.GetGomilkFile("token")
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	return nil
+	err = ioutil.WriteFile(tokenPath, []byte(token), 0600)
+	if err != nil {
+		return tokenPath, err
+	}
+
+	return tokenPath, nil
 }
 
 /*
@@ -171,13 +154,13 @@ func Login(c *cli.Context) {
 		panic(err)
 	}
 
-	err = setUserToken(token.Rsp.Auth.Token)
+	filename, err := setUserToken(token.Rsp.Auth.Token)
 	if err != nil {
 		panic(err)
 	}
 
 	fmt.Println("You've now logged in!")
 	fmt.Println("If you'd like us to forget your login, delete the following file:")
-	fmt.Printf("\t%s\n", tokenFilePath())
+	fmt.Printf("\t%s\n", filename)
 	fmt.Println("Don't forget to buy some milk. :)")
 }

@@ -3,9 +3,8 @@ package add
 import (
 	"fmt"
 
-	"github.com/dishbreak/gomilk/cli/utils"
+	"github.com/dishbreak/gomilk/client/task"
 
-	"github.com/dishbreak/gomilk/api/tasks"
 	"github.com/dishbreak/gomilk/cli/login"
 
 	"github.com/urfave/cli"
@@ -21,20 +20,20 @@ func Add(c *cli.Context) error {
 		return fmt.Errorf("need exactly one argument (got %d)", len(args))
 	}
 
-	timeline, err := utils.Timeline()
+	client, err := task.NewClient(login.Token)
 	if err != nil {
 		return err
 	}
 
-	task, err := tasks.Add(login.Token, args.Get(0), timeline)
+	taskObj, err := client.Add(args[0])
 	if err != nil {
 		return err
 	}
 
-	if dueDate, err := task.DueDate(); err != nil {
-		fmt.Printf("Created task '%s', due on '%s'\n", task.Name(), dueDate)
+	if dueDate, err := taskObj.DueDate(); err != nil {
+		fmt.Printf("Created task '%s', due on '%s'\n", taskObj.Name(), dueDate)
 	} else {
-		fmt.Printf("Created task '%s'\n", task.Name())
+		fmt.Printf("Created task '%s'\n", taskObj.Name())
 	}
 
 	return nil

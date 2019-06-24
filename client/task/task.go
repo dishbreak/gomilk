@@ -106,3 +106,66 @@ func Sort(slice []Task) {
 	log.Debug(slice)
 	sort.Slice(slice, less)
 }
+
+type taskRecord struct {
+	RawID        string
+	RawName      string
+	TaskseriesID string
+	ListID       string
+	Due          string
+	HasDueTime   string
+	Tags         []string
+	Completed    string
+}
+
+/*
+Name returns the task name.
+*/
+func (t taskRecord) Name() string {
+	return t.RawName
+}
+
+/*
+DueDate returns the due date, or an error if it doesn't have one.
+*/
+func (t taskRecord) DueDate() (DateTime, error) {
+	// Determine the timezone.
+	zone, err := time.LoadLocation("Local")
+	if err != nil {
+		zone, err = time.LoadLocation("UTC")
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	parsed, err := time.Parse(time.RFC3339, t.Due)
+	if err != nil {
+		parsed = time.Now().In(zone)
+	}
+	return DateTime{parsed.In(zone), t.DueDateHasTime()}, err
+}
+
+/*
+DueDateHasTime returns true when the user gave a specific date and time for the due date,
+false when the task just has a date.
+*/
+func (t taskRecord) DueDateHasTime() bool {
+	return t.HasDueTime == "1"
+}
+
+/*
+IsCompleted returns true when the completed field is a datetime.
+*/
+func (t taskRecord) IsCompleted() bool {
+	completed := true
+	_, err := time.Parse(time.RFC3339, t.Completed)
+	if err != nil {
+		completed = false
+	}
+
+	return completed
+}
+
+func (t taskRecord) ID() string {
+	return t.RawID
+}

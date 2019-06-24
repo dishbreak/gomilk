@@ -4,14 +4,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/dishbreak/gomilk/cli/utils"
-
-	"github.com/dishbreak/gomilk/api/tasks"
 	"github.com/dishbreak/gomilk/cli/login"
-	"github.com/dishbreak/gomilk/model/task"
-	"github.com/urfave/cli"
 
-	log "github.com/sirupsen/logrus"
+	"github.com/dishbreak/gomilk/client/task"
+	"github.com/urfave/cli"
 )
 
 type taskView struct {
@@ -62,31 +58,24 @@ func (t *taskView) dueDateString() string {
 func List(c *cli.Context) error {
 	args := c.Args()
 
-	cache, cacheErr := utils.NewCache("tasks")
-	if cacheErr != nil {
-		fmt.Println("WARNING! Unable to cache results:", cacheErr)
-	}
-
 	filter := "status:incomplete"
 	if len(args) == 1 {
 		filter = args.Get(0)
 	}
 
-	tasks, err := tasks.GetList(login.Token, filter)
-	log.WithFields(log.Fields{
-		"record_count": len(tasks),
-	}).Debug("Got response.")
+	client, err := task.NewClient(login.Token)
 	if err != nil {
 		return err
 	}
 
-	task.Sort(tasks)
-	cachedItems := make([]utils.Identifiable, len(tasks))
-	for idx, task := range tasks {
-		fmt.Printf("[%d] %s\n", idx, &taskView{task})
-		cachedItems[idx] = task
+	tasks, err := client.List(filter)
+	if err != nil {
+		return err
 	}
 
-	err = cache.Update(cachedItems)
+	for idx, task := range tasks {
+		fmt.Printf("[%d] %s\n", idx, &taskView{task})
+	}
+
 	return err
 }

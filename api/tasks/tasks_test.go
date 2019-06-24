@@ -19,7 +19,7 @@ func TestUnmarshalListResponse(t *testing.T) {
 		t.Fatalf("Error reading test data: %s\n", err)
 	}
 
-	var resp tasks.TaskGetListResponse
+	var resp tasks.GetListResponse
 	err = json.Unmarshal(buf, &resp)
 	if err != nil {
 		t.Fatalf("Error unmarshalling json: %s\n", err)
@@ -32,7 +32,7 @@ func TestUnmarshalListResponse(t *testing.T) {
 	names := make([]string, 8)
 
 	for idx, taskSeries := range resp.Rsp.Tasks.List[0].Taskseries {
-		names[idx] = taskSeries.Name()
+		names[idx] = taskSeries.RawName
 	}
 
 	expectedNames := []string{

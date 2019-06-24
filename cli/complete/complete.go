@@ -20,6 +20,7 @@ func Complete(c *cli.Context) error {
 		return err
 	}
 
+
 	records, err := cache.Get()
 	if err != nil {
 		return err

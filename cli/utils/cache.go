@@ -20,10 +20,7 @@ Cache allows a gomilk command the ability to store a list of API objects.
 This allows the user to reference API objects in a subsequent command.
 */
 type Cache interface {
-	// Update replaces the contents of the cache with the array of Identifiable objects.
-	Update([]Identifiable) error
-	// Get returns the current contents of the cache as an array of Identifiable objects.
-	Get() ([]Identifiable, error)
+	Filename() string
 }
 
 type cache struct {
@@ -35,7 +32,6 @@ type identifierRecord struct {
 	Index   int
 	RawID   string
 	RawName string
-	Data    interface{}
 }
 
 type cacheContents []identifierRecord
@@ -63,13 +59,13 @@ func NewCache(identifier string) (Cache, error) {
 	return c, err
 }
 
-func (c *cache) Update(items []Identifiable) error {
-	output := make(cacheContents, len(items))
-	for idx, item := range items {
-		output[idx] = identifierRecord{idx, item.ID(), item.Name()}
-	}
+func (c *cache) Filename() string {
+	return c.filename
+}
 
-	data, err := json.Marshal(output)
+func (c *cache) Update(items []interface{}) error {
+
+	data, err := json.Marshal(items)
 	if err != nil {
 		return err
 	}
@@ -79,22 +75,16 @@ func (c *cache) Update(items []Identifiable) error {
 	return err
 }
 
-func (c *cache) Get() ([]Identifiable, error) {
+func (c *cache) Get(items []interface{}) ([]interface{}, error) {
 	data, err := ioutil.ReadFile(c.filename)
 	if err != nil {
-		return []Identifiable{}, err
+		return items, err
 	}
 
-	var contents []identifierRecord
-	err = json.Unmarshal(data, &contents)
+	err = json.Unmarshal(data, &items)
 	if err != nil {
-		return []Identifiable{}, err
+		return items, err
 	}
 
-	result := make([]Identifiable, len(contents))
-	for idx, elem := range contents {
-		result[idx] = elem
-	}
-
-	return result, err
+	return items, err
 }

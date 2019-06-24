@@ -2,7 +2,6 @@ package utils
 
 import (
 	"github.com/dishbreak/gomilk/api/timelines"
-	"github.com/dishbreak/gomilk/cli/login"
 )
 
 /*
@@ -11,7 +10,7 @@ this call will request a new timeline from RTM.
 
 For more info, see: https://www.rememberthemilk.com/services/api/timelines.rtm
 */
-func Timeline() (string, error) {
+func Timeline(token string) (string, error) {
 	currentTimelineRecord, err := NewCurrentRecord("timeline")
 	if err != nil {
 		return "", err
@@ -21,7 +20,7 @@ func Timeline() (string, error) {
 	// If it doesn't exist, request a new timeline from RTM
 	timeline, err := currentTimelineRecord.Get()
 	if err != nil {
-		timelineRecord, err := timelines.Create(login.Token)
+		timelineRecord, err := timelines.Create(token)
 		timeline = timelineRecord.Rsp.Timeline
 		if err != nil {
 			return "", err
