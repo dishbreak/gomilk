@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"io/ioutil"
 
-	"github.com/dishbreak/gomilk/api/timelines"
-
 	"github.com/dishbreak/gomilk/cli/utils"
 
 	"github.com/dishbreak/gomilk/api/tasks"
@@ -34,12 +32,12 @@ func NewClient(token string) (Client, error) {
 		return nil, err
 	}
 
-	timeline, err := timelines.Create(token)
+	timeline, err := utils.Timeline(token)
 	if err != nil {
 		return nil, err
 	}
 
-	return &client{token: token, timelineID: timeline.Rsp.Timeline, cacheFilePath: cacheFilePath.Filename()}, nil
+	return &client{token: token, timelineID: timeline, cacheFilePath: cacheFilePath.Filename()}, nil
 }
 
 func (c *client) Add(task string) (Task, error) {

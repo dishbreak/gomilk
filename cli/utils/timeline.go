@@ -30,6 +30,6 @@ func Timeline(token string) (string, error) {
 		currentTimelineRecord.Set(timeline)
 	}
 
-	return timeline, err
+	return timeline, nil
 
 }
