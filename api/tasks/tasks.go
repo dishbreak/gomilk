@@ -44,6 +44,7 @@ type TaskAddResponse struct {
 	}
 }
 
+// GetListResponse contains the response for the call to rtm.tasks.getList
 type GetListResponse struct {
 	Rsp struct {
 		Stat  string
@@ -79,7 +80,7 @@ func Add(apiToken string, name string, timelineID string) (TaskAddResponse, erro
 
 }
 
-// GetList invokes rtm.tasks.getList
+// GetList invokes rtm.tasks.getList to return a listing of lists, taskseries, and tasks.
 func GetList(apiToken string, filter string) (GetListResponse, error) {
 	args := map[string]string{
 		"api_key":    api.APIKey,
