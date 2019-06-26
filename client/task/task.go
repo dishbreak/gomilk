@@ -4,13 +4,15 @@ import (
 	"sort"
 	"time"
 
-	"github.com/dishbreak/gomilk/cli/utils"
 	log "github.com/sirupsen/logrus"
 )
 
 // Task represents the interface that CLI will use to process API results.
 type Task interface {
-	utils.Identifiable
+	// ID returns a tuple of the 3 identifiers: task, taskseries, and list.
+	ID() (string, string, string)
+	// Name returns the user-friendly name of the taskseries/task.
+	Name() string
 	// DueDate will provide the task's due date if it has one, or error if it doesn't.
 	DueDate() (DateTime, error)
 	// DueDateHasTime tells us if the task has a specific time it's due, or if it's just due on the day.
@@ -40,7 +42,7 @@ func (t DateTime) SameDateAs(other time.Time) bool {
 }
 
 /*
-SameDateAs will return true if the other time.Time has the same month, day, and year.
+SameDateAsDateTime will return true if the other DateTime has the same month, day, and year.
 
 The method will convert the other time to this DateTime location prior to making the check.
 */
@@ -67,6 +69,9 @@ func (t DateTime) LessThan(other DateTime) bool {
 	return t.Sub(other.Time) < 0
 }
 
+/*
+Sort will arrange tasks using the due date and the task name
+*/
 func Sort(slice []Task) {
 	less := func(i, j int) (r bool) {
 		defer func() {
@@ -166,6 +171,6 @@ func (t taskRecord) IsCompleted() bool {
 	return completed
 }
 
-func (t taskRecord) ID() string {
-	return t.RawID
+func (t taskRecord) ID() (string, string, string) {
+	return t.RawID, t.TaskseriesID, t.ListID
 }

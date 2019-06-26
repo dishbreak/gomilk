@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/dishbreak/gomilk/cli/add"
+	"github.com/dishbreak/gomilk/cli/complete"
 	"github.com/dishbreak/gomilk/cli/list"
 	"github.com/dishbreak/gomilk/cli/login"
 	log "github.com/sirupsen/logrus"
@@ -30,7 +31,7 @@ func main() {
 		},
 		{
 			Name:    "add",
-			Aliases: []string{"a"},
+			Aliases: []string{"t"},
 			Usage:   "Add a task to Remember the Milk.",
 			Action:  makeAction(add.Add),
 		},
@@ -39,6 +40,12 @@ func main() {
 			Aliases: []string{"ls"},
 			Usage:   "list tasks using an optional filter.",
 			Action:  makeAction(list.List),
+		},
+		{
+			Name:    "complete",
+			Aliases: []string{"c"},
+			Usage:   "completes listed tasks",
+			Action:  makeAction(complete.Complete),
 		},
 	}
 

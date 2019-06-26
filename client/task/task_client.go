@@ -15,6 +15,8 @@ Client provides a simplified interface that handles packing messages and obeying
 type Client interface {
 	Add(task string) (Task, error)
 	List(filter string) ([]Task, error)
+	Complete(task Task) (Task, error)
+	GetCachedTasks() ([]Task, error)
 }
 
 type client struct {
@@ -74,6 +76,40 @@ func (c *client) List(filter string) ([]Task, error) {
 
 	return result, nil
 
+}
+
+func (c *client) GetCachedTasks() ([]Task, error) {
+	cachedTasks := make([]taskRecord, 0)
+	result := make([]Task, 0)
+
+	buf, err := ioutil.ReadFile(c.cacheFilePath)
+	if err != nil {
+		return result, err
+	}
+
+	err = json.Unmarshal(buf, &cachedTasks)
+	if err != nil {
+		return result, err
+	}
+
+	for _, val := range cachedTasks {
+		result = append(result, val)
+	}
+
+	return result, nil
+
+}
+
+func (c *client) Complete(task Task) (Task, error) {
+
+	taskID, taskseriesID, listID := task.ID()
+
+	resp, err := tasks.Complete(c.token, c.timelineID, listID, taskseriesID, taskID)
+	if err != nil {
+		return nil, err
+	}
+
+	return unpackList(resp.Rsp.List)[0], nil
 }
 
 func unpackList(list tasks.TaskList) []Task {

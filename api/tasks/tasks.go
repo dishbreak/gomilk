@@ -44,6 +44,9 @@ type TaskAddResponse struct {
 	}
 }
 
+// TaskCompleteResponse contains tge response for the call to rtm.tasks.complete
+type TaskCompleteResponse TaskAddResponse
+
 // GetListResponse contains the response for the call to rtm.tasks.getList
 type GetListResponse struct {
 	Rsp struct {
@@ -107,4 +110,28 @@ func GetList(apiToken string, filter string) (GetListResponse, error) {
 
 	return response, nil
 
+}
+
+// Complete invokes rtm.tasks.complete
+func Complete(apiToken, timelineID, listID, taskseriesID, taskID string) (TaskCompleteResponse, error) {
+	args := map[string]string{
+		"api_key":       api.APIKey,
+		"auth_token":    apiToken,
+		"timeline":      timelineID,
+		"list_id":       listID,
+		"taskseries_id": taskseriesID,
+		"task_id":       taskID,
+	}
+
+	var response TaskCompleteResponse
+	unmarshal := func(b []byte) error {
+		return json.Unmarshal(b, &response)
+	}
+
+	err := api.GetMethod("rtm.tasks.complete", args, unmarshal)
+	if err != nil {
+		return response, err
+	}
+
+	return response, nil
 }
