@@ -4,27 +4,7 @@ gomilk is a CLI tool for managing your tasks, written in Go!
 
 # Getting Started
 
-## Fetching Dependencies
-
-*Note: at some point I will figure out how to do this automatically.*
-
-Run the following commands to set up dependencies for yourself.
-
-```
-$ go get github.com/pkg/browser
-$ go get github.com/sirupsen/logrus
-$ go get github.com/urfave/cli
-```
-
-## Fetching Source Code
-
-Cool! Once you're done with that, grab the code using this command.
-
-```
-$ go get github.com/dishbreak/gomilk
-```
-
-It will fail. I'm very sorry. Here's why...
+So you've cloned the repo. Cool! Here's what you need to do first.
 
 ## Setting up API Tokens
 
@@ -43,7 +23,9 @@ const (
 
 The terms of the RTM API key require me to protect my app's credentials. Sorry!
 
-Once that's done, you can use `go build && go install` to build the binary and install it on your path.
+## Building and Installing
+
+Once that's done, you can use `make` to build the binary and `make install` to install it on your path. Whenever you make changes and you want to try them out, run `make install`.
 
 # Using gomilk
 
