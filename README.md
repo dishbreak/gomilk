@@ -1,5 +1,7 @@
 # gomilk
 
+[![Build Status](https://travis-ci.org/dishbreak/gomilk.svg?branch=master)](https://travis-ci.org/dishbreak/gomilk)
+
 gomilk is a CLI tool for managing your tasks, written in Go!
 
 # Getting Started
