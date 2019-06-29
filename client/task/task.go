@@ -21,7 +21,7 @@ type Task interface {
 	// IsCompleted will return true if the task has a completed date
 	IsCompleted() bool
 	// Priotity will return the priority of the task (4 is no priority)
-	Priority() int
+	Priority() TaskPriority
 }
 
 /*
@@ -184,14 +184,34 @@ func (t taskRecord) ID() (string, string, string) {
 	return t.RawID, t.TaskseriesID, t.ListID
 }
 
-// NoPriority Represents a task without any priority.
-const NoPriority = 4
+type TaskPriority int
 
-func (t taskRecord) Priority() int {
+const (
+	HighPriority TaskPriority = 1
+	MedPriority  TaskPriority = 2
+	LowPriority  TaskPriority = 3
+	NoPriority   TaskPriority = 4
+)
+
+func (p TaskPriority) String() (v string) {
+	switch p {
+	case HighPriority:
+		v = "(1)"
+	case MedPriority:
+		v = "(2)"
+	case LowPriority:
+		v = "(3)"
+	case NoPriority:
+		v = ""
+	}
+	return
+}
+
+func (t taskRecord) Priority() TaskPriority {
 	priority, err := strconv.Atoi(t.RawPriority)
 	if err != nil {
-		priority = NoPriority
+		priority = int(NoPriority)
 	}
 
-	return priority
+	return TaskPriority(priority)
 }
