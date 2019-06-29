@@ -210,7 +210,7 @@ func (p TaskPriority) String() (v string) {
 func (t taskRecord) Priority() TaskPriority {
 	priority, err := strconv.Atoi(t.RawPriority)
 	if err != nil {
-		priority = int(NoPriority)
+		return NoPriority
 	}
 
 	return TaskPriority(priority)
