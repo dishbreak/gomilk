@@ -6,7 +6,7 @@ build: test deps
 deps:
 	go build ./...
 
-test:
+test: deps
 	go test ./...
 
 install: build
