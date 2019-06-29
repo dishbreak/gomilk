@@ -8,6 +8,8 @@ import (
 
 	"github.com/dishbreak/gomilk/client/task"
 	"github.com/urfave/cli"
+
+	"github.com/kyokomi/emoji"
 )
 
 type taskView struct {
@@ -45,9 +47,9 @@ func (t *taskView) dueDateString() string {
 	case date.SameDateAs(now.AddDate(0, 0, 1)):
 		return "Tomorrow"
 	case date.Sub(now) < 0 && !t.IsCompleted() && date.SameYearAs(now):
-		return date.Format("Jan 2") + " - OVERDUE"
+		return date.Format("Jan 2") + emoji.Sprint(" :heavy_exclamation_mark:")
 	case date.Sub(now) < 0 && !t.IsCompleted():
-		return date.Format("Jan 2, 2006") + " - OVERDUE"
+		return date.Format("Jan 2, 2006") + emoji.Sprint(" :heavy_exclamation_mark:")
 	case date.SameYearAs(now):
 		return date.Format("Jan 2")
 	default:
