@@ -2,6 +2,7 @@ package task
 
 import (
 	"sort"
+	"strconv"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -19,6 +20,8 @@ type Task interface {
 	DueDateHasTime() bool
 	// IsCompleted will return true if the task has a completed date
 	IsCompleted() bool
+	// Priotity will return the priority of the task (4 is no priority)
+	Priority() int
 }
 
 /*
@@ -85,6 +88,11 @@ func Sort(slice []Task) {
 		otherDate, otherErr := other.DueDate()
 
 		switch {
+		// a task with a higher priority always comes first
+		case one.Priority() < other.Priority():
+			r = true
+		case one.Priority() > other.Priority():
+			r = false
 		// a task with a due date always comes first
 		case oneErr == nil && otherErr != nil:
 			r = true
@@ -121,6 +129,7 @@ type taskRecord struct {
 	HasDueTime   string
 	Tags         []string
 	Completed    string
+	RawPriority  string
 }
 
 /*
@@ -173,4 +182,16 @@ func (t taskRecord) IsCompleted() bool {
 
 func (t taskRecord) ID() (string, string, string) {
 	return t.RawID, t.TaskseriesID, t.ListID
+}
+
+// NoPriority Represents a task without any priority.
+const NoPriority = 4
+
+func (t taskRecord) Priority() int {
+	priority, err := strconv.Atoi(t.RawPriority)
+	if err != nil {
+		priority = NoPriority
+	}
+
+	return priority
 }
