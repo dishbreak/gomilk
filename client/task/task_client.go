@@ -123,6 +123,7 @@ func unpackList(list tasks.TaskList) []Task {
 				ListID:       list.ID,
 				Due:          taskInstance.Due,
 				HasDueTime:   taskInstance.HasDueTime,
+				RawPriority:  taskInstance.Priority,
 			}
 
 			result = append(result, record)
