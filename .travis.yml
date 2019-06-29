@@ -1,0 +1,16 @@
+language: go
+go:
+- 1.11.x
+sudo: false
+install:
+- make build
+script:
+- make test
+after_success:
+- test ${TRAVIS_TAG:0:1} = v && curl -sL https://git.io/goreleaser | bash
+notifications: 
+email: false
+
+before_install:
+- openssl aes-256-cbc -K $encrypted_98eef08b753a_key -iv $encrypted_98eef08b753a_iv
+  -in api/secrets.go.enc -out api/secrets.go -d
