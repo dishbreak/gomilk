@@ -8,6 +8,27 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+type tagsRecord struct {
+	Tag []string
+}
+
+type tagsWrapper struct {
+	tagsRecord
+	Empty bool
+}
+
+// UnmarshalJSON handles the situation where tasks is an empty array when empty.
+func (t *tagsWrapper) UnmarshalJSON(data []byte) error {
+	// GRRR. When tags is empty, it's a JSON array.
+	if string(data) == "[]" {
+		t.Empty = true
+		return nil
+	}
+
+	// And when it's not, it's an object.
+	return json.Unmarshal(data, &t.tagsRecord)
+}
+
 // TaskResponse covers what RTM calls a "taskseries"
 type TaskResponse struct {
 	RawID    string `json:"id"`
@@ -16,6 +37,7 @@ type TaskResponse struct {
 	RawName  string `json:"name"`
 	Source   string
 	URL      string
+	Tags     tagsWrapper
 	Task     []struct {
 		RawID      string `json:"id"`
 		Due        string

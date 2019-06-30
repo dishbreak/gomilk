@@ -21,6 +21,8 @@ type Task interface {
 	IsCompleted() bool
 	// Priotity will return the priority of the task (4 is no priority)
 	Priority() TaskPriority
+	// Tags will return a list of tags if they exist,
+	Tags() Tags
 }
 
 /*
@@ -126,9 +128,9 @@ type taskRecord struct {
 	ListID       string
 	Due          string
 	HasDueTime   string
-	Tags         []string
 	Completed    string
 	RawPriority  string
+	RawTags      Tags
 }
 
 /*
@@ -181,4 +183,8 @@ func (t taskRecord) IsCompleted() bool {
 
 func (t taskRecord) ID() (string, string, string) {
 	return t.RawID, t.TaskseriesID, t.ListID
+}
+
+func (t taskRecord) Tags() Tags {
+	return t.RawTags
 }

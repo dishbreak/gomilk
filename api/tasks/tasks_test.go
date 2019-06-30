@@ -2,7 +2,6 @@ package tasks_test
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"path"
 	"testing"
@@ -24,8 +23,6 @@ func TestUnmarshalListResponse(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Error unmarshalling json: %s\n", err)
 	}
-
-	fmt.Printf("response: %s\n", resp)
 
 	assert.Equal(t, 8, len(resp.Rsp.Tasks.List[0].Taskseries))
 
