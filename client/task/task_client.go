@@ -124,6 +124,7 @@ func unpackList(list tasks.TaskList) []Task {
 				Due:          taskInstance.Due,
 				HasDueTime:   taskInstance.HasDueTime,
 				RawPriority:  taskInstance.Priority,
+				RawTags:      UnpackTags(taskseries),
 			}
 
 			result = append(result, record)

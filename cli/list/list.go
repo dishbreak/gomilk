@@ -17,7 +17,7 @@ type taskView struct {
 }
 
 func (t *taskView) String() string {
-	return fmt.Sprintf("%s (due: %s) %s", t.Name(), t.dueDateString(), t.Priority())
+	return fmt.Sprintf("%s (due: %s) %s %s", t.Name(), t.dueDateString(), t.Priority(), t.Tags())
 }
 
 func (t *taskView) dueDateString() string {
