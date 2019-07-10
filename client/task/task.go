@@ -18,7 +18,7 @@ type Task interface {
 	// DueDateHasTime tells us if the task has a specific time it's due, or if it's just due on the day.
 	DueDateHasTime() bool
 	// IsCompleted will return true if the task has a completed date
-	IsCompleted() bool
+	IsCompleted() CompletedState
 	// Priotity will return the priority of the task (4 is no priority)
 	Priority() TaskPriority
 	// Tags will return a list of tags if they exist,
@@ -87,8 +87,14 @@ func Sort(slice []Task) {
 
 		oneDate, oneErr := one.DueDate()
 		otherDate, otherErr := other.DueDate()
+		oneCompleted, otherCompleted := one.IsCompleted().Completed, other.IsCompleted().Completed
 
 		switch {
+		// an incompleted task should come first
+		case otherCompleted && !oneCompleted:
+			r = true
+		case oneCompleted && !otherCompleted:
+			r = false
 		// a task with a higher priority always comes first
 		case one.Priority() < other.Priority():
 			r = true
@@ -171,14 +177,15 @@ func (t taskRecord) DueDateHasTime() bool {
 /*
 IsCompleted returns true when the completed field is a datetime.
 */
-func (t taskRecord) IsCompleted() bool {
+func (t taskRecord) IsCompleted() CompletedState {
 	completed := true
 	_, err := time.Parse(time.RFC3339, t.Completed)
 	if err != nil {
+		log.WithField("error", err).Debug("Task is incomplete.")
 		completed = false
 	}
 
-	return completed
+	return CompletedState{completed}
 }
 
 func (t taskRecord) ID() (string, string, string) {
