@@ -17,7 +17,7 @@ type taskView struct {
 }
 
 func (t *taskView) String() string {
-	return fmt.Sprintf("%s (due: %s) %s %s", t.Name(), t.dueDateString(), t.Priority(), t.Tags())
+	return fmt.Sprintf("%s %s (due: %s) %s %s", t.IsCompleted(), t.Name(), t.dueDateString(), t.Priority(), t.Tags())
 }
 
 func (t *taskView) dueDateString() string {
@@ -46,9 +46,9 @@ func (t *taskView) dueDateString() string {
 		return "Today"
 	case date.SameDateAs(now.AddDate(0, 0, 1)):
 		return "Tomorrow"
-	case date.Sub(now) < 0 && !t.IsCompleted() && date.SameYearAs(now):
+	case date.Sub(now) < 0 && !t.IsCompleted().Completed && date.SameYearAs(now):
 		return date.Format("Jan 2") + emoji.Sprint(" :heavy_exclamation_mark:")
-	case date.Sub(now) < 0 && !t.IsCompleted():
+	case date.Sub(now) < 0 && !t.IsCompleted().Completed:
 		return date.Format("Jan 2, 2006") + emoji.Sprint(" :heavy_exclamation_mark:")
 	case date.SameYearAs(now):
 		return date.Format("Jan 2")
