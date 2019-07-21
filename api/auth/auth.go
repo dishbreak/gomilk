@@ -48,10 +48,11 @@ func GetFrob() (*FrobRecord, error) {
 		return json.Unmarshal(body, &frobResponse)
 	}
 
-	err := api.GetMethod("rtm.auth.getFrob", args, unmarshal)
+	rawResponse, err := api.GetMethod("rtm.auth.getFrob", args, unmarshal)
 	if err != nil {
 		return nil, err
 	}
+	frobResponse, _ = rawResponse.(FrobRecord)
 
 	return &frobResponse, nil
 
@@ -93,15 +94,12 @@ func GetToken(frob string) (*TokenRecord, error) {
 	}
 
 	var tokenRecord TokenRecord
-	unmarshal := func(body []byte) error {
-		return json.Unmarshal(body, &tokenRecord)
-	}
 
-	err := api.GetMethod("rtm.auth.getToken", args, unmarshal)
+	rawResponse, err := api.GetMethod("rtm.auth.getToken", args, tokenRecord)
 	if err != nil {
 		return nil, err
 	}
-
+	tokenRecord, _ = rawResponse.(TokenRecord)
 	return &tokenRecord, nil
 }
 
@@ -118,18 +116,18 @@ func CheckToken(authToken string) (*TokenCheckRecord, error) {
 	}
 
 	var tokenCheckRecord TokenCheckRecord
-	unmarshal := func(body []byte) error {
-		return json.Unmarshal(body, &tokenCheckRecord)
-	}
 
-	err := api.GetMethod("rtm.auth.checkToken", args, unmarshal)
+	rawResponse, err := api.GetMethod("rtm.auth.checkToken", args, tokenCheckRecord)
 	if err != nil {
 		return nil, err
 	}
+
+	tokenCheckRecord, _ = rawResponse.(TokenCheckRecord)
 
 	return &tokenCheckRecord, nil
 }
 
 const (
-	ERROR_INVALID_AUTH_TOKEN = "98"
+	//ErrorInvalidAuthToken represents the situatuon where the token is invalidated (expired or access revoked)
+	ErrorInvalidAuthToken = "98"
 )

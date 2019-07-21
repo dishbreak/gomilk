@@ -91,15 +91,15 @@ func Add(apiToken string, name string, timelineID string) (TaskAddResponse, erro
 		"name":       name,
 	}
 
-	var response TaskAddResponse
-	unmarshal := func(b []byte) error {
-		return json.Unmarshal(b, &response)
+	var taskResponse TaskAddResponse
+
+	rawResponse, err := api.GetMethod("rtm.tasks.add", args, taskResponse)
+	if err != nil {
+		return taskResponse, err
 	}
 
-	err := api.GetMethod("rtm.tasks.add", args, unmarshal)
-	if err != nil {
-		return response, err
-	}
+	// I'm not checking the type assertion on a type that I passed in.
+	response, _ := rawResponse.(TaskAddResponse)
 
 	return response, nil
 
@@ -117,15 +117,13 @@ func GetList(apiToken string, filter string) (GetListResponse, error) {
 	}
 
 	var response GetListResponse
-	unmarshal := func(b []byte) error {
-		return json.Unmarshal(b, &response)
-	}
 
-	err := api.GetMethod("rtm.tasks.getList", args, unmarshal)
+	rawResponse, err := api.GetMethod("rtm.tasks.getList", args, response)
 	if err != nil {
 		return response, err
 	}
 
+	response, _ = rawResponse.(GetListResponse)
 	log.WithFields(log.Fields{
 		"response": response,
 	}).Debug("")
@@ -146,14 +144,13 @@ func Complete(apiToken, timelineID, listID, taskseriesID, taskID string) (TaskCo
 	}
 
 	var response TaskCompleteResponse
-	unmarshal := func(b []byte) error {
-		return json.Unmarshal(b, &response)
-	}
 
-	err := api.GetMethod("rtm.tasks.complete", args, unmarshal)
+	rawResponse, err := api.GetMethod("rtm.tasks.complete", args, response)
 	if err != nil {
 		return response, err
 	}
+
+	response, _ = rawResponse.(TaskCompleteResponse)
 
 	return response, nil
 }

@@ -96,48 +96,42 @@ func (e *RTMAPIError) Error() string {
 /*
 Get will issue a HTTP request using the GET verb.
 */
-func GetMethod(method string, args map[string]string, unmarshal func([]byte) error) error {
+func GetMethod(method string, args map[string]string, response interface{}) (interface{}, error) {
 	requestURL := FormURL(rootURL, method, args)
 
 	resp, err := myClient.Get(requestURL.String())
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	var prettyJSON bytes.Buffer
 	err = json.Indent(&prettyJSON, body, "", "\t")
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	log.Debugf("RTM API response: %s", string(prettyJSON.Bytes()))
 
 	var errorMessage RTMAPIError
 	if err := json.Unmarshal(body, &errorMessage); err != nil {
-		log.WithFields(log.Fields{
-			"error": err,
-		}).Fatal("Failed to unmarshal api response.")
-		return err
+		return nil, fmt.Errorf("Unable to unmarshal response: %v", err)
 	}
 	if errorMessage.Rsp.Stat == "fail" {
-		return &errorMessage
+		return nil, &errorMessage
 	}
 
-	if err := unmarshal(body); err != nil {
-		log.WithFields(log.Fields{
-			"error": err,
-		}).Fatal("Failed to unmarshal api response.")
-		return err
+	if err := json.Unmarshal(body, &response); err != nil {
+		return nil, fmt.Errorf("Unable to unmarshal response: %v", err)
 	}
 
 	log.Debug("Completed API request.")
 
-	return nil
+	return response, nil
 }

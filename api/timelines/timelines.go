@@ -1,8 +1,6 @@
 package timelines
 
 import (
-	"encoding/json"
-
 	"github.com/dishbreak/gomilk/api"
 )
 
@@ -28,14 +26,12 @@ func Create(apiToken string) (*TimelineCreateResponse, error) {
 	}
 
 	var timelineResp TimelineCreateResponse
-	unmarshall := func(b []byte) error {
-		return json.Unmarshal(b, &timelineResp)
-	}
 
-	err := api.GetMethod("rtm.timelines.create", args, unmarshall)
+	rawResponse, err := api.GetMethod("rtm.timelines.create", args, timelineResp)
 	if err != nil {
 		return nil, err
 	}
 
+	timelineResp, _ = rawResponse.(TimelineCreateResponse)
 	return &timelineResp, nil
 }

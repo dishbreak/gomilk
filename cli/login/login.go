@@ -91,7 +91,7 @@ func IsAuthenticated() bool {
 	_, err = auth.CheckToken(token)
 	if err != nil {
 		if err, ok := err.(*api.RTMAPIError); ok {
-			if err.Rsp.Err.Code != auth.ERROR_INVALID_AUTH_TOKEN {
+			if err.Rsp.Err.Code != auth.ErrorInvalidAuthToken {
 				panic(err)
 			}
 			return false
