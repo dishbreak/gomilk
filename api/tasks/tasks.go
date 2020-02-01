@@ -66,8 +66,12 @@ type TaskAddResponse struct {
 	}
 }
 
-// TaskCompleteResponse contains tge response for the call to rtm.tasks.complete
+// TaskCompleteResponse contains the response for the call to rtm.tasks.complete
 type TaskCompleteResponse TaskAddResponse
+
+// TaskSetDueDateResponse contains the response for the call to
+// rtm.tasks.setDueDate
+type TaskSetDueDateResponse TaskAddResponse
 
 // GetListResponse contains the response for the call to rtm.tasks.getList
 type GetListResponse struct {
@@ -151,6 +155,32 @@ func Complete(apiToken, timelineID, listID, taskseriesID, taskID string) (TaskCo
 	}
 
 	err := api.GetMethod("rtm.tasks.complete", args, unmarshal)
+	if err != nil {
+		return response, err
+	}
+
+	return response, nil
+}
+
+// SetDueDate invokes rtm.tasks.setDueDate
+func SetDueDate(apiToken, timelineID, listID, taskseriesID, taskID, due string) (TaskSetDueDateResponse, error) {
+	args := map[string]string{
+		"api_key":       api.APIKey,
+		"auth_token":    apiToken,
+		"timeline":      timelineID,
+		"list_id":       listID,
+		"taskseries_id": taskseriesID,
+		"task_id":       taskID,
+		"due":           due,
+		"parse":         "1", // always parse the due date
+	}
+
+	var response TaskSetDueDateResponse
+	unmarshal := func(b []byte) error {
+		return json.Unmarshal(b, &response)
+	}
+
+	err := api.GetMethod("rtm.tasks.setDueDate", args, unmarshal)
 	if err != nil {
 		return response, err
 	}

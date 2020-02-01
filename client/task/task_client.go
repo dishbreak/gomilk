@@ -17,6 +17,7 @@ type Client interface {
 	List(filter string) ([]Task, error)
 	Complete(task Task) (Task, error)
 	GetCachedTasks() ([]Task, error)
+	SetDueDate(task Task, due string) (Task, error)
 }
 
 type client struct {
@@ -105,6 +106,17 @@ func (c *client) Complete(task Task) (Task, error) {
 	taskID, taskseriesID, listID := task.ID()
 
 	resp, err := tasks.Complete(c.token, c.timelineID, listID, taskseriesID, taskID)
+	if err != nil {
+		return nil, err
+	}
+
+	return unpackList(resp.Rsp.List)[0], nil
+}
+
+func (c *client) SetDueDate(task Task, due string) (Task, error) {
+	taskID, taskseriesID, listID := task.ID()
+
+	resp, err := tasks.SetDueDate(c.token, c.timelineID, listID, taskseriesID, taskID, due)
 	if err != nil {
 		return nil, err
 	}

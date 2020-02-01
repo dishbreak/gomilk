@@ -53,6 +53,8 @@ func FormURL(baseURL string, method string, params map[string]string) *url.URL {
 	params["method"] = method
 	params["format"] = "json"
 
+	log.WithField("params", params).Debug("got arguments for request")
+
 	query := u.Query()
 	for key, value := range params {
 		query.Set(key, value)
