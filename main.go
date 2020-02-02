@@ -6,6 +6,7 @@ import (
 
 	"github.com/dishbreak/gomilk/cli/add"
 	"github.com/dishbreak/gomilk/cli/complete"
+	"github.com/dishbreak/gomilk/cli/due"
 	"github.com/dishbreak/gomilk/cli/list"
 	"github.com/dishbreak/gomilk/cli/login"
 	log "github.com/sirupsen/logrus"
@@ -46,6 +47,13 @@ func main() {
 			Aliases: []string{"c"},
 			Usage:   "completes listed tasks",
 			Action:  makeAction(complete.Complete),
+		},
+		{
+			Name:      "due",
+			Aliases:   []string{"d"},
+			Usage:     "sets due date for listed tasks",
+			ArgsUsage: "DUE_DATE identifiers...",
+			Action:    makeAction(due.Due),
 		},
 	}
 
