@@ -10,18 +10,11 @@ So you've cloned the repo. Cool! Here's what you need to do first.
 
 ## Setting up API Tokens
 
-You'll need to [apply with RTM](https://www.rememberthemilk.com/services/api/keys.rtm) for an API token. Once you have one, you can create a file under `api/secrets.go`, with contents like so.
+You'll need to [apply with RTM](https://www.rememberthemilk.com/services/api/keys.rtm) for an API token. You'll need to configure credentials in your environment like so:
 
 ```
-package api
-
-const (
-	// APIKey is the API key provided to us by remember the milk
-	APIKey = "YOUR API KEY"
-	// SharedSecret is the secret used to sign API requests
-	SharedSecret = "YOUR SHARED SECRET"
-)
-```
+GOMILK_API_KEY=yourapikeyhere
+GOMILK_SHARED_SECRET=yoursharedsecret
 
 The terms of the RTM API key require me to protect my app's credentials. Sorry!
 

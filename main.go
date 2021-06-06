@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/dishbreak/gomilk/api"
 	"github.com/dishbreak/gomilk/cli/add"
 	"github.com/dishbreak/gomilk/cli/complete"
 	"github.com/dishbreak/gomilk/cli/due"
@@ -14,6 +15,8 @@ import (
 )
 
 func main() {
+	api.ValidateCredentials()
+
 	app := cli.NewApp()
 	app.Name = "gomilk"
 	app.Usage = "Remember the Milk command-line client."
